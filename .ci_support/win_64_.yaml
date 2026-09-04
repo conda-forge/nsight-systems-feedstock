@@ -1,0 +1,16 @@
+channel_sources:
+- conda-forge
+channel_targets:
+- conda-forge main
+expat:
+- '2'
+fontconfig:
+- '2'
+freetype:
+- '2'
+krb5:
+- '1.22'
+libxcb:
+- '1'
+target_platform:
+- win-64

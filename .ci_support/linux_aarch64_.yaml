@@ -1,0 +1,34 @@
+alsa_lib:
+- '1.2'
+arm_variant_type:
+- sbsa
+c_stdlib:
+- sysroot
+c_stdlib_version:
+- '2.28'
+channel_sources:
+- conda-forge
+channel_targets:
+- conda-forge main
+dbus:
+- '1'
+docker_image:
+- quay.io/condaforge/linux-anvil-x86_64:alma10
+expat:
+- '2'
+fontconfig:
+- '2'
+freetype:
+- '2'
+krb5:
+- '1.22'
+libxcb:
+- '1'
+nspr:
+- '4'
+nss:
+- '3'
+target_platform:
+- linux-aarch64
+xz:
+- '5'
