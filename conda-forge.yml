@@ -1,4 +1,5 @@
 provider:
+  win_arm64: github_actions
   linux_64: github_actions
   win_64: github_actions
 build_platform:

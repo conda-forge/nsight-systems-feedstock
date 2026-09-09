@@ -1,3 +1,9 @@
+if "%TARGET_PLATFORM%" == "win-arm64" (
+    set CUDA_ARCH=arm64
+) else (
+    set CUDA_ARCH=x64
+)
+
 @echo off
 :: GUI half of the split: the Qt-based nsys-ui timeline viewer.
 setlocal enabledelayedexpansion
@@ -17,25 +23,25 @@ if not exist "!payload!" (
 )
 
 :: See build_cli.bat: cross-target collector and UCRT stubs are not shipped.
-if exist "!payload!\target-linux-x64" rmdir /q /s "!payload!\target-linux-x64"
+if exist "!payload!\target-linux-%CUDA_ARCH%" rmdir /q /s "!payload!\target-linux-%CUDA_ARCH%"
 if exist "!payload!\lib32" rmdir /q /s "!payload!\lib32"
 if exist "!payload!\lib64" rmdir /q /s "!payload!\lib64"
 
-:: Shares an install root with nsight-systems-cli, which owns target-windows-x64
+:: Shares an install root with nsight-systems-cli, which owns target-windows-%CUDA_ARCH%
 :: and documentation.
 set "dest=%LIBRARY_PREFIX%\nsight-systems\!version_short!"
 if not exist "!dest!" mkdir "!dest!"
 if errorlevel 1 exit 1
 
-move "!payload!\host-windows-x64" "!dest!\" || exit 1
+move "!payload!\host-windows-%CUDA_ARCH%" "!dest!\" || exit 1
 
 if not exist "%SCRIPTS%" mkdir "%SCRIPTS%"
 
-set "shim_dir=%%~dp0..\Library\nsight-systems\!version_short!\host-windows-x64"
+set "shim_dir=%%~dp0..\Library\nsight-systems\!version_short!\host-windows-%CUDA_ARCH%"
 set "shim_args=%%*"
 
 :: See build_cli.bat for why this loop is not recursive and why sqlite3 is excluded.
-for %%f in ("!dest!\host-windows-x64\*.exe") do (
+for %%f in ("!dest!\host-windows-%CUDA_ARCH%\*.exe") do (
     set "exe_name=%%~nf"
     set "skip="
     for %%x in (python sqlite3) do if /i "!exe_name!"=="%%x" set "skip=1"
