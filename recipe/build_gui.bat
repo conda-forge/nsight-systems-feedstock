@@ -1,7 +1,10 @@
+:: NVIDIA names the Windows collector with its own arch token: x64 on win-64 and
+:: armv8 -- NOT arm64 -- on win-arm64. Kept separate from any generic arch
+:: variable: the Linux collector bundled in the Windows archive is always x64.
 if "%TARGET_PLATFORM%" == "win-arm64" (
-    set CUDA_ARCH=arm64
+    set "NSYS_ARCH=armv8"
 ) else (
-    set CUDA_ARCH=x64
+    set "NSYS_ARCH=x64"
 )
 
 @echo off
@@ -23,25 +26,25 @@ if not exist "!payload!" (
 )
 
 :: See build_cli.bat: cross-target collector and UCRT stubs are not shipped.
-if exist "!payload!\target-linux-%CUDA_ARCH%" rmdir /q /s "!payload!\target-linux-%CUDA_ARCH%"
+if exist "!payload!\target-linux-x64" rmdir /q /s "!payload!\target-linux-x64"
 if exist "!payload!\lib32" rmdir /q /s "!payload!\lib32"
 if exist "!payload!\lib64" rmdir /q /s "!payload!\lib64"
 
-:: Shares an install root with nsight-systems-cli, which owns target-windows-%CUDA_ARCH%
+:: Shares an install root with nsight-systems-cli, which owns target-windows-!NSYS_ARCH!
 :: and documentation.
 set "dest=%LIBRARY_PREFIX%\nsight-systems\!version_short!"
 if not exist "!dest!" mkdir "!dest!"
 if errorlevel 1 exit 1
 
-move "!payload!\host-windows-%CUDA_ARCH%" "!dest!\" || exit 1
+move "!payload!\host-windows-x64" "!dest!\" || exit 1
 
 if not exist "%SCRIPTS%" mkdir "%SCRIPTS%"
 
-set "shim_dir=%%~dp0..\Library\nsight-systems\!version_short!\host-windows-%CUDA_ARCH%"
+set "shim_dir=%%~dp0..\Library\nsight-systems\!version_short!\host-windows-x64"
 set "shim_args=%%*"
 
 :: See build_cli.bat for why this loop is not recursive and why sqlite3 is excluded.
-for %%f in ("!dest!\host-windows-%CUDA_ARCH%\*.exe") do (
+for %%f in ("!dest!\host-windows-x64\*.exe") do (
     set "exe_name=%%~nf"
     set "skip="
     for %%x in (python sqlite3) do if /i "!exe_name!"=="%%x" set "skip=1"

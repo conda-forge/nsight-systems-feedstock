@@ -1,7 +1,10 @@
+:: NVIDIA names the Windows collector with its own arch token: x64 on win-64 and
+:: armv8 -- NOT arm64 -- on win-arm64. Kept separate from any generic arch
+:: variable: the Linux collector bundled in the Windows archive is always x64.
 if "%TARGET_PLATFORM%" == "win-arm64" (
-    set CUDA_ARCH=arm64
+    set "NSYS_ARCH=armv8"
 ) else (
-    set CUDA_ARCH=x64
+    set "NSYS_ARCH=x64"
 )
 
 @echo off
@@ -26,7 +29,7 @@ if not exist "!payload!" (
 :: The Windows archive also carries a Linux target collector (~497 MB) so a Windows
 :: host can profile a Linux target remotely, plus the UCRT redistributable stubs that
 :: a conda environment already provides. Neither is shipped.
-if exist "!payload!\target-linux-%CUDA_ARCH%" rmdir /q /s "!payload!\target-linux-%CUDA_ARCH%"
+if exist "!payload!\target-linux-x64" rmdir /q /s "!payload!\target-linux-x64"
 if exist "!payload!\lib32" rmdir /q /s "!payload!\lib32"
 if exist "!payload!\lib64" rmdir /q /s "!payload!\lib64"
 
@@ -34,14 +37,14 @@ set "dest=%LIBRARY_PREFIX%\nsight-systems\!version_short!"
 if not exist "!dest!" mkdir "!dest!"
 if errorlevel 1 exit 1
 
-move "!payload!\target-windows-%CUDA_ARCH%" "!dest!\" || exit 1
+move "!payload!\target-windows-!NSYS_ARCH!" "!dest!\" || exit 1
 move "!payload!\documentation" "!dest!\" || exit 1
 
 if not exist "%SCRIPTS%" mkdir "%SCRIPTS%"
 
 :: Shim bodies are built here, outside the for loop, so that `%%` is unambiguously
 :: an escaped percent sign rather than a loop-variable reference.
-set "shim_dir=%%~dp0..\Library\nsight-systems\!version_short!\target-windows-%CUDA_ARCH%"
+set "shim_dir=%%~dp0..\Library\nsight-systems\!version_short!\target-windows-!NSYS_ARCH!"
 set "shim_args=%%*"
 
 :: A .bat launcher per shipped executable. The loop is deliberately NOT recursive:
@@ -50,7 +53,7 @@ set "shim_args=%%*"
 :: sqlite3.exe is excluded because it also ships in the GUI half (the two packages
 :: would clobber each other's shim in Scripts\) and because a sqlite3.bat on PATH
 :: would shadow the environment's real sqlite3.
-for %%f in ("!dest!\target-windows-%CUDA_ARCH%\*.exe") do (
+for %%f in ("!dest!\target-windows-!NSYS_ARCH!\*.exe") do (
     set "exe_name=%%~nf"
     set "skip="
     for %%x in (python sqlite3) do if /i "!exe_name!"=="%%x" set "skip=1"
