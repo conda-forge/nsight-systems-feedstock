@@ -2,42 +2,33 @@
 # GUI half of the split: the Qt-based nsys-ui timeline viewer.
 set -euxo pipefail
 
-# 2025.1.3.140 -> 2025.1.3, the directory NVIDIA creates inside the archive.
+# 2026.3.2.313 -> 2026.3.2, the install root this recipe creates.
 version_short="${PKG_VERSION%.*}"
 
-payload="$(find . -maxdepth 3 -type d -path "*/nsight-systems/${version_short}" -print -quit)"
-if [[ ! -d "${payload}" ]]; then
-    echo "could not locate nsight-systems/${version_short} in the extracted archive" >&2
+# See build_cli.sh: the LINUX archives lost their nsight-systems/<version>/ nesting in
+# 2026.3.x, so locate the payload by a directory known to be inside it.
+host_path="$(find . -maxdepth 4 -type d -name 'host-linux-*' -print -quit)"
+if [[ -z "${host_path}" ]]; then
+    echo "could not locate a host-linux-* directory in the extracted archive" >&2
     exit 1
 fi
-archive_root="$(dirname "$(dirname "${payload}")")"
+host_dir="$(basename "${host_path}")"
 
 # See build_cli.sh: ~800 MB of duplicated rpm/deb payload.
-rm -rf "${archive_root}/.packages"
-
-# Exactly one host-side directory per archive (host-linux-x64 on x86_64,
-# host-linux-armv8 on sbsa). See build_cli.sh for why this is globbed.
-shopt -s nullglob
-host_dirs=("${payload}"/host-linux-*)
-shopt -u nullglob
-if [[ ${#host_dirs[@]} -ne 1 ]]; then
-    echo "expected exactly one host-linux-* directory, found ${#host_dirs[@]}" >&2
-    exit 1
-fi
-host_dir="$(basename "${host_dirs[0]}")"
+find . -maxdepth 4 -type d -name '.packages' -exec rm -rf {} +
 
 # Shares an install root with nsight-systems-cli, which owns target-*/ and docs/.
 dest="${PREFIX}/nsight-systems-${version_short}"
 mkdir -p "${dest}"
-mv "${payload}/${host_dir}" "${dest}/"
+mv "${host_path}" "${dest}/"
 
 mkdir -p "${PREFIX}/bin"
 ln -s "../nsight-systems-${version_short}/${host_dir}/nsys-ui" "${PREFIX}/bin/nsys-ui"
 
-# about.license_file resolves against the work directory root, which is already
-# where LICENSE lands when the archive's top-level directory is stripped.
+# about.license_file resolves against the work directory root.
 if [[ ! -f ./LICENSE ]]; then
-    cp "${archive_root}/LICENSE" ./LICENSE
+    license="$(find . -maxdepth 4 -type f -name LICENSE -print -quit)"
+    [[ -n "${license}" ]] && cp "${license}" ./LICENSE
 fi
 
 find "${dest}/${host_dir}" -type f \( -name "*.so" -o -name "*.so.*" \) -print0 \

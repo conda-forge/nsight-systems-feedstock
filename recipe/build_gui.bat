@@ -1,3 +1,12 @@
+:: NVIDIA names the Windows collector with its own arch token: x64 on win-64 and
+:: armv8 -- NOT arm64 -- on win-arm64. Kept separate from any generic arch
+:: variable: the Linux collector bundled in the Windows archive is always x64.
+if "%TARGET_PLATFORM%" == "win-arm64" (
+    set "NSYS_ARCH=armv8"
+) else (
+    set "NSYS_ARCH=x64"
+)
+
 @echo off
 :: GUI half of the split: the Qt-based nsys-ui timeline viewer.
 setlocal enabledelayedexpansion
@@ -21,7 +30,7 @@ if exist "!payload!\target-linux-x64" rmdir /q /s "!payload!\target-linux-x64"
 if exist "!payload!\lib32" rmdir /q /s "!payload!\lib32"
 if exist "!payload!\lib64" rmdir /q /s "!payload!\lib64"
 
-:: Shares an install root with nsight-systems-cli, which owns target-windows-x64
+:: Shares an install root with nsight-systems-cli, which owns target-windows-!NSYS_ARCH!
 :: and documentation.
 set "dest=%LIBRARY_PREFIX%\nsight-systems\!version_short!"
 if not exist "!dest!" mkdir "!dest!"
