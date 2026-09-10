@@ -50,7 +50,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   # Upstream publishes no macOS or ppc64le artifact for Nsight Systems.
   skip: true  # [osx or ppc64le]
 
