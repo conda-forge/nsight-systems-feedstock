@@ -21,7 +21,7 @@
 # not the CUDA toolkit. `cuda_version` records the CUDA release whose redist
 # manifest this build was taken from: redistrib_12.9.2.json.
 {% set name = "nsight-systems-split" %}
-{% set version = "2026.3.2.313" %}
+{% set version = "2026.3.2.476" %}
 # The directory NVIDIA creates inside the archive is the three-component version.
 {% set version_short = version.split(".")[0] + "." + version.split(".")[1] + "." + version.split(".")[2] %}
 {% set cuda_version = "13.4" %}
@@ -36,10 +36,10 @@
 # NVIDIA names the Windows collector with its own arch token: armv8, not arm64.
 {% set nsys_arch = "x64" %}  # [win64]
 {% set nsys_arch = "armv8" %}  # [win and arm64]
-{% set sha256 = "d4581745d8453e23ae940c5cd46a6112823f1a12a5655f6d2f6cf830cb7a9a33" %}  # [linux64]
-{% set sha256 = "3a6c86755618d2fcc7ef1ff4e2e4df7e06a7a7e1855b7f171b6c88bbec9a3476" %}  # [aarch64]
-{% set sha256 = "2d53bf878bf827cdd4fd9b075278149601ff969e36501c74da4c152afdb497f7" %}  # [win64]
-{% set sha256 = "753e87a4f6ab433f6956d9d9d6749e3de05c490ceb23275d9c5b645dca5b362e" %}  # [win and arm64]
+{% set sha256 = "af8daa081e7333e3fb4a7fc3505e379593f05a8014a703f268560cec22338aca" %}  # [linux64]
+{% set sha256 = "88f682d10ae874a1ce801ab3dbea9b3d3e49d87b1bfe54c5620e81a192164c33" %}  # [aarch64]
+{% set sha256 = "e4d1e8dce8875b01fcb295623974d755e77eb8e346e7e52aba9e9e7fad376887" %}  # [win64]
+{% set sha256 = "b8cdc498d17efe461032ad8fc6f029f62dd8bb4dfaa2804d48429999dbfebc3c" %}  # [win and arm64]
 
 package:
   name: {{ name|lower }}
@@ -50,7 +50,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   # Upstream publishes no macOS or ppc64le artifact for Nsight Systems.
   skip: true  # [osx or ppc64le]
 
