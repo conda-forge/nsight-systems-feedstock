@@ -7,7 +7,7 @@ build_platform:
 workflow_settings:
   free_disk_space: max
 github:
-  branch_name: main
+  branch_name: "13.2"
   tooling_branch_name: main
 conda_build:
   error_overlinking: true

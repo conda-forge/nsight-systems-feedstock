@@ -52,7 +52,12 @@ source:
 build:
   number: 0
   # Upstream publishes no macOS or ppc64le artifact for Nsight Systems.
-  skip: true  # [osx or ppc64le]
+  # The 13.2.2 redist ships no windows-arm64 nsight_systems archive either, so this
+  # branch cannot build WOA at all. Skipping both outputs stops a rerender from
+  # regenerating .ci_support/win_arm64_.yaml and scheduling a build that cannot work.
+  # No parentheses: conda-build's find_used_variables_in_text does not split on ')',
+  # which silently collapses the variant matrix. 'and' binds tighter than 'or'.
+  skip: true  # [osx or ppc64le or win and arm64]
 
 outputs:
   # -- CLI ---------------------------------------------------------------------
