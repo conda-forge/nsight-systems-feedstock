@@ -1,11 +1,6 @@
-:: NVIDIA names the Windows collector with its own arch token: x64 on win-64 and
-:: armv8 -- NOT arm64 -- on win-arm64. Kept separate from any generic arch
-:: variable: the Linux collector bundled in the Windows archive is always x64.
-if "%TARGET_PLATFORM%" == "win-arm64" (
-    set "NSYS_ARCH=armv8"
-) else (
-    set "NSYS_ARCH=x64"
-)
+:: NVIDIA names the Windows collector with its own arch token; on win-64 it is x64.
+:: (The Linux collector bundled in the Windows archive is always x64 regardless.)
+set "NSYS_ARCH=x64"
 
 @echo off
 :: CLI half of the split: the target-side collector (nsys) plus the documentation.

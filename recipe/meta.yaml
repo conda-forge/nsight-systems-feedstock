@@ -28,18 +28,14 @@
 {% set platform = "linux-x86_64" %}  # [linux64]
 {% set platform = "linux-sbsa" %}  # [aarch64]
 {% set platform = "windows-x86_64" %}  # [win64]
-{% set platform = "windows-arm64" %}  # [win and arm64]
 {% set extension = "tar.xz" %}  # [not win]
 {% set extension = "zip" %}  # [win]
 {% set script_ext = "sh" %}  # [not win]
 {% set script_ext = "bat" %}  # [win]
-# NVIDIA names the Windows collector with its own arch token: armv8, not arm64.
 {% set nsys_arch = "x64" %}  # [win64]
-{% set nsys_arch = "armv8" %}  # [win and arm64]
 {% set sha256 = "be1d23614a8336f971ac857484690bd9e28f7459b3058089e0a962f14d106d49" %}  # [linux64]
 {% set sha256 = "a464b1767d2920448cf7836a08b490a0b2c58f631aa05e9d05cd1d44bc79bf06" %}  # [aarch64]
 {% set sha256 = "9f275edd8ce7e2ed8f7def9b62464b7af628cd6ed3169b822efd3e421550cfa4" %}  # [win64]
-{% set sha256 = "753e87a4f6ab433f6956d9d9d6749e3de05c490ceb23275d9c5b645dca5b362e" %}  # [win and arm64]
 
 package:
   name: {{ name|lower }}
@@ -52,12 +48,7 @@ source:
 build:
   number: 0
   # Upstream publishes no macOS or ppc64le artifact for Nsight Systems.
-  # The 13.2.2 redist ships no windows-arm64 nsight_systems archive either, so this
-  # branch cannot build WOA at all. Skipping both outputs stops a rerender from
-  # regenerating .ci_support/win_arm64_.yaml and scheduling a build that cannot work.
-  # No parentheses: conda-build's find_used_variables_in_text does not split on ')',
-  # which silently collapses the variant matrix. 'and' binds tighter than 'or'.
-  skip: true  # [osx or ppc64le or win and arm64]
+  skip: true  # [osx or ppc64le]
 
 outputs:
   # -- CLI ---------------------------------------------------------------------
@@ -123,10 +114,6 @@ outputs:
   - name: nsight-systems
     script: build_gui.{{ script_ext }}
     build:
-      # Upstream ships no ARM64 host build (there is no host-windows-arm* in the
-      # archive), so the timeline viewer cannot be built for win-arm64. Only the
-      # CLI half ships there.
-      skip: true  # [win and arm64]
       binary_relocation: false
       missing_dso_whitelist:
         - '*'
