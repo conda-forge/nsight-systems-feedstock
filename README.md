@@ -1,7 +1,7 @@
 About nsight-systems-feedstock
 ==============================
 
-Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/nsight-systems-feedstock/blob/main/LICENSE.txt)
+Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/nsight-systems-feedstock/blob/13.2/LICENSE.txt)
 
 
 About nsight-systems
@@ -72,7 +72,7 @@ Current build status
     <td>GitHub Actions</td>
     <td>
       <a href="https://github.com/conda-forge/nsight-systems-feedstock/actions/workflows/conda-build.yml">
-        <img src="https://github.com/conda-forge/nsight-systems-feedstock/actions/workflows/conda-build.yml/badge.svg?event=push&branch=main">
+        <img src="https://github.com/conda-forge/nsight-systems-feedstock/actions/workflows/conda-build.yml/badge.svg?event=push&branch=13.2">
       </a>
     </td>
   </tr>
