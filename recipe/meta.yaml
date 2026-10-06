@@ -18,13 +18,13 @@
 # `nsight-systems`.
 #
 # Versioning follows Nsight Systems upstream (as nsight-compute-feedstock does),
-# not the CUDA toolkit. `cuda_version` records the CUDA release whose redist
-# manifest this build was taken from: redistrib_12.9.2.json.
+# not the CUDA toolkit. This build was taken from the CUDA 13.4 redist manifest.
+# There is deliberately no cuda-version dependency: nsys is self-contained, does
+# not link against the CUDA toolkit, and checks driver support itself at runtime.
 {% set name = "nsight-systems-split" %}
 {% set version = "2026.3.2.476" %}
 # The directory NVIDIA creates inside the archive is the three-component version.
 {% set version_short = version.split(".")[0] + "." + version.split(".")[1] + "." + version.split(".")[2] %}
-{% set cuda_version = "13.4" %}
 {% set platform = "linux-x86_64" %}  # [linux64]
 {% set platform = "linux-sbsa" %}  # [aarch64]
 {% set platform = "windows-x86_64" %}  # [win64]
@@ -50,7 +50,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 2
   # Upstream publishes no macOS or ppc64le artifact for Nsight Systems.
   skip: true  # [osx or ppc64le]
 
@@ -77,10 +77,6 @@ outputs:
         # declared glibc floor.
         - cf-nvidia-tools 1.*  # [linux]
         - arm-variant * {{ arm_variant_type | default("sbsa") }}  # [aarch64]
-      host:
-        - cuda-version {{ cuda_version }}
-      run:
-        - {{ pin_compatible("cuda-version", min_pin="x", max_pin="x") }}
       run_constrained:
         - arm-variant * {{ arm_variant_type | default("sbsa") }}  # [aarch64]
     test:
@@ -136,7 +132,6 @@ outputs:
         - cf-nvidia-tools 1.*  # [linux]
         - arm-variant * {{ arm_variant_type | default("sbsa") }}  # [aarch64]
       host:
-        - cuda-version {{ cuda_version }}
         # The viewer is a Qt application. This mirrors the dependency set that
         # nsight-compute-feedstock uses for ncu-ui, which is the same Qt stack.
         - expat
@@ -171,7 +166,6 @@ outputs:
         - xorg-libxrender      # [linux]
         - xorg-libxtst         # [linux]
       run:
-        - {{ pin_compatible("cuda-version", max_pin="x.x") }}
         # What makes this the complete product rather than just the viewer: the CLI
         # half is also what the viewer runs for a local profiling session.
         - {{ pin_subpackage("nsight-systems-cli", exact=True) }}
